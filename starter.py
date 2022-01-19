@@ -93,7 +93,7 @@ def statistics(training_set, validation_set, test_set):
         if count % thresh == 0:
             if word not in vocabulary:
                 vocabulary.append(word)
-
+    count = 0
     # STOPWORDS in vocabulary
     for voc in vocabulary:
         if voc in stops_words and voc not in stops_words_list:
@@ -101,10 +101,12 @@ def statistics(training_set, validation_set, test_set):
 
     # UNKNOWN counting
     for w in aux_set:
-        if w not in vocabulary:
-            unk_tokens += 1
-            if w not in unk_vocabulary_list:
-                unk_vocabulary_list.append(w)
+        count += 1
+        if count % thresh == 0:
+            if w not in vocabulary:
+                unk_tokens += 1
+                if w not in unk_vocabulary_list:
+                    unk_vocabulary_list.append(w)
 
     # i) number of tokens in each split (with threshold 3)
     num_tokens_training = round(len(training_set) / 3)
@@ -151,7 +153,7 @@ def main():
     statistics(training_set, validation_set, test_set)
 
 
-'''
+
     corpus = my_corpus(None)
     
     text = input('Please enter a test sequence to encode and recover: ')
@@ -164,7 +166,7 @@ def main():
     text = corpus.encode_as_text(ints)
     print(' ')
     print('this is the encoded text: %s' % text)
-'''
+
 
 if __name__ == "__main__":
     main()
