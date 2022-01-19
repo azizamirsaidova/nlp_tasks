@@ -46,17 +46,19 @@ def main():
         elif isinstance(tokens[i], float):
             tokens[i] = '<decimal>'
 
-
-        elif (tokens[i] in months_list) and (tokens[i+1].isnumeric()) and len(tokens[i+1])<3:
+        elif (tokens[i] in months_list) and re.match(r'\d*',tokens[i+1]) and len(tokens[i+1])<3:
             tokens[i+1] = '<days>'
 
-        elif i > 1 and (tokens[i] in months_list) and (tokens[i - 1].isnumeric()) and len(tokens[i - 1]) < 3:
+        elif i > 1 and (tokens[i] in months_list) and re.match(r'\d*',tokens[i-1]) and len(tokens[i - 1]) < 3:
             tokens[i - 1] = '<days>'
-            
 
+        elif tokens[i].isdigit():
+            tokens[i] = '<integer>'
+
+    print(tokens)
 # October 2, 2003
 # 1 March 1926   -> '\s(\d*\s\w*\s\d*)\s'
-
+'''
     corpus = my_corpus(None)
     
     text = input('Please enter a test sequence to encode and recover: ')
@@ -69,6 +71,7 @@ def main():
     text = corpus.encode_as_text(ints)
     print(' ')
     print('this is the encoded text: %s' % text)
+'''
 
 if __name__ == "__main__":
     main()
