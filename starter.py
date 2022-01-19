@@ -67,20 +67,25 @@ def split_data(tokens):
     validation_set = tokens[split1:split2]
     test_set = tokens[split2:]
 
+    # print(len(training_set))
+    # print(len(validation_set))
+    # print(len(test_set))
+
     return (training_set, validation_set, test_set)
 
 def main():
 
+    # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
+
+    #SPLIT datasets
     splited_data = split_data(tokens)
     training_set = splited_data[0]
     validation_set = splited_data[1]
     test_set = splited_data[2]
 
-    #print(len(training_set))
-    #print(len(validation_set))
-    #print(len(test_set))
+
 
 
 '''
