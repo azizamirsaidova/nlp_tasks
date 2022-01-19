@@ -27,10 +27,8 @@ class my_corpus():
         
         return(text)
 
-
-def main():
+def tokenize(text_file):
     #TOKENIZE
-    text_file = open("source_text.txt").read()
     tokens = nltk.word_tokenize(text_file)
     months_list = ['january','february','march','april','may','june','july','august','september','october','november','december']
     #print(tokens)
@@ -58,7 +56,13 @@ def main():
         elif re.search('[\d*]', tokens[i]) and re.search('[@_!#$%^&*()<>?/\|}{~:-]', tokens[i]):
             tokens[i] = '<other>'
 
-    #print(tokens)
+    return tokens
+
+def main():
+
+    text_file = open("source_text.txt").read()
+    tokenize(text_file)
+
 # October 2, 2003
 # 1 March 1926   -> '\s(\d*\s\w*\s\d*)\s'
 '''
