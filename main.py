@@ -1,0 +1,4 @@
+import starter
+
+starter.main()
+
