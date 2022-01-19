@@ -1,3 +1,7 @@
+import nltk
+import re
+nltk.download('punkt')
+
 class my_corpus():
     def __init__(self, params):
         super().__init__() 
@@ -22,8 +26,37 @@ class my_corpus():
         print('as a text sequence.')
         
         return(text)
-    
+
+
 def main():
+    #TOKENIZE
+    text_file = open("source_text.txt").read()
+    tokens = nltk.word_tokenize(text_file)
+    months_list = ['january','february','march','april','may','june','july','august','september','october','november','december']
+    #print(tokens)
+
+    #LOWERCASE
+    for i in range(len(tokens)):
+        tokens[i] = tokens[i].lower()
+    #print(tokens[0:10])
+
+    for i in range(len(tokens)):
+        if tokens[i].isnumeric() and len(tokens[i])==4:
+            tokens[i] = '<year>'
+        elif isinstance(tokens[i], float):
+            tokens[i] = '<decimal>'
+
+
+        elif (tokens[i] in months_list) and (tokens[i+1].isnumeric()) and len(tokens[i+1])<3:
+            tokens[i+1] = '<days>'
+
+        elif i > 1 and (tokens[i] in months_list) and (tokens[i - 1].isnumeric()) and len(tokens[i - 1]) < 3:
+            tokens[i - 1] = '<days>'
+            
+
+# October 2, 2003
+# 1 March 1926   -> '\s(\d*\s\w*\s\d*)\s'
+
     corpus = my_corpus(None)
     
     text = input('Please enter a test sequence to encode and recover: ')
@@ -36,7 +69,7 @@ def main():
     text = corpus.encode_as_text(ints)
     print(' ')
     print('this is the encoded text: %s' % text)
-    
+
 if __name__ == "__main__":
     main()
         
