@@ -58,13 +58,31 @@ def tokenize(text_file):
 
     return tokens
 
+def split_data(tokens):
+
+    split1 = round(len(tokens)*0.8)
+    split2 = round(split1 + len(tokens)*0.1)
+
+    training_set = tokens[:split1]
+    validation_set = tokens[split1:split2]
+    test_set = tokens[split2:]
+
+    return (training_set, validation_set, test_set)
+
 def main():
 
     text_file = open("source_text.txt").read()
-    tokenize(text_file)
+    tokens = tokenize(text_file)
+    splited_data = split_data(tokens)
+    training_set = splited_data[0]
+    validation_set = splited_data[1]
+    test_set = splited_data[2]
 
-# October 2, 2003
-# 1 March 1926   -> '\s(\d*\s\w*\s\d*)\s'
+    #print(len(training_set))
+    #print(len(validation_set))
+    #print(len(test_set))
+
+
 '''
     corpus = my_corpus(None)
     
