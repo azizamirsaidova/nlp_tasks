@@ -82,7 +82,6 @@ def statistics(training_set, validation_set, test_set):
     count = 0
     vocabulary = []
     unk_vocabulary_list = []
-    num_tokens = 0
     unk_tokens = 0
     stops_words = list(set(stopwords.words('english')))
     stops_words_list = []
@@ -94,14 +93,11 @@ def statistics(training_set, validation_set, test_set):
         if count % thresh == 0:
             if word not in vocabulary:
                 vocabulary.append(word)
-    print(len(vocabulary))
 
     # STOPWORDS in vocabulary
     for voc in vocabulary:
         if voc in stops_words and voc not in stops_words_list:
             stops_words_list.append(voc)
-
-    print(len(stops_words_list))
 
     # UNKNOWN counting
     for w in aux_set:
@@ -109,12 +105,33 @@ def statistics(training_set, validation_set, test_set):
             unk_tokens += 1
             if w not in unk_vocabulary_list:
                 unk_vocabulary_list.append(w)
-    print(len(unk_vocabulary_list))
 
+    # i) number of tokens in each split (with threshold 3)
+    num_tokens_training = round(len(training_set) / 3)
+    num_tokens_validation = round(len(validation_set) / 3)
+    num_tokens_test = round(len(test_set) / 3)
+    print(f"Number of tokens of training set with threshold 3: {num_tokens_training}")
+    print(f"Number of tokens of validation set with threshold 3: {num_tokens_validation}")
+    print(f"Number of tokens of test set with threshold 3: {num_tokens_test}")
 
+    # ii) the vocabulary size
+    vocabulary_size = len(vocabulary)
+    print(f"The vocabulary size is: {vocabulary_size}")
 
+    # iii) the number of <unk> tokens
+    print(f"The number of <unk> tokens is: {unk_tokens}")
 
+    # iv) number of out of vocabulary words
+    num_out_vocabulary = len(unk_vocabulary_list)
+    print(f"The number of out of vocabulary words: {num_out_vocabulary}")
 
+    # v) the number of types mapped to <unk>
+
+    # vi) the number of stop words in the vocabulary
+    num_stop_words = len(stops_words_list)
+    print(f"The number of stop words in the vocabulary: {num_stop_words}")
+
+    # vii) two custom metrics of your choice
 
 
 def main():
