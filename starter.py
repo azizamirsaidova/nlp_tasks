@@ -1,6 +1,8 @@
 import nltk
 import re
 nltk.download('punkt')
+nltk.download('stopwords')
+from nltk.corpus import stopwords
 
 class my_corpus():
     def __init__(self, params):
@@ -56,6 +58,7 @@ def tokenize(text_file):
         elif re.search('[\d*]', tokens[i]) and re.search('[@_!#$%^&*()<>?/\|}{~:-]', tokens[i]):
             tokens[i] = '<other>'
 
+
     return tokens
 
 def split_data(tokens):
@@ -73,11 +76,53 @@ def split_data(tokens):
 
     return (training_set, validation_set, test_set)
 
+def statistics(training_set, validation_set, test_set):
+
+    thresh = 3
+    count = 0
+    vocabulary = []
+    unk_vocabulary_list = []
+    num_tokens = 0
+    unk_tokens = 0
+    stops_words = list(set(stopwords.words('english')))
+    stops_words_list = []
+    aux_set = validation_set + test_set
+
+    # VOCABULARY creating from training
+    for word in training_set:
+        count += 1
+        if count % thresh == 0:
+            if word not in vocabulary:
+                vocabulary.append(word)
+    print(len(vocabulary))
+
+    # STOPWORDS in vocabulary
+    for voc in vocabulary:
+        if voc in stops_words and voc not in stops_words_list:
+            stops_words_list.append(voc)
+
+    print(len(stops_words_list))
+
+    # UNKNOWN counting
+    for w in aux_set:
+        if w not in vocabulary:
+            unk_tokens += 1
+            if w not in unk_vocabulary_list:
+                unk_vocabulary_list.append(w)
+    print(len(unk_vocabulary_list))
+
+
+
+
+
+
+
 def main():
 
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
+    #print(tokens)
 
     #SPLIT datasets
     splited_data = split_data(tokens)
@@ -85,7 +130,8 @@ def main():
     validation_set = splited_data[1]
     test_set = splited_data[2]
 
-
+    # STATISTICS
+    statistics(training_set, validation_set, test_set)
 
 
 '''
