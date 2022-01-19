@@ -55,7 +55,10 @@ def main():
         elif tokens[i].isdigit():
             tokens[i] = '<integer>'
 
-    print(tokens)
+        elif re.search('[\d*]', tokens[i]) and re.search('[@_!#$%^&*()<>?/\|}{~:-]', tokens[i]):
+            tokens[i] = '<other>'
+
+    #print(tokens)
 # October 2, 2003
 # 1 March 1926   -> '\s(\d*\s\w*\s\d*)\s'
 '''
