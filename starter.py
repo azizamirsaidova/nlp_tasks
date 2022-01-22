@@ -86,13 +86,15 @@ def statistics(training_set, validation_set, test_set):
     stops_words = list(set(stopwords.words('english')))
     stops_words_list = []
     aux_set = validation_set + test_set
+    unk_type_list = []
 
     # VOCABULARY creating from training
+    string_check = re.compile('[@_!#$%^&*()<>?/\|}{~:-]')
     for word in training_set:
         count += 1
-        if count % thresh == 0:
-            if word not in vocabulary:
-                vocabulary.append(word)
+        #if count % thresh == 0:
+        if word not in vocabulary and (string_check.search(word) == None):
+            vocabulary.append(word)
     count = 0
     # STOPWORDS in vocabulary
     for voc in vocabulary:
@@ -128,12 +130,23 @@ def statistics(training_set, validation_set, test_set):
     print(f"The number of out of vocabulary words: {num_out_vocabulary}")
 
     # v) the number of types mapped to <unk>
+    for unk in unk_vocabulary_list:
+        type_unk = type(unk)
+        #print(type_unk)
+        if type_unk not in unk_type_list:
+            unk_type_list.append(type_unk)
+    print(f"The number of types mapped to <unk>: {len(unk_type_list)}")
 
     # vi) the number of stop words in the vocabulary
     num_stop_words = len(stops_words_list)
     print(f"The number of stop words in the vocabulary: {num_stop_words}")
 
     # vii) two custom metrics of your choice
+    # TOTAL NUMBER OF TOKENS OF THE CORPUS
+    corpus_tokens = len(training_set) + len(validation_set) + len(test_set)
+    ratio_unk_voc = num_out_vocabulary/vocabulary_size
+    print(f"The total number of tokens of the corpus is: {corpus_tokens}")
+    print(f"The ratio between the <unk> and vocabulary size is: {ratio_unk_voc}")
 
 
 def main():
