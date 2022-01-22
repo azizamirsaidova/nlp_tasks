@@ -84,12 +84,15 @@ def statistics(training_set, validation_set, test_set):
     validation_split = []
     test_split = []
     vocabulary = []
-    unk_vocabulary_list = []
-    unk_tokens = 0
+    unk_vocabulary_list_validation = []
+    unk_vocabulary_list_test = []
+    unk_tokens_validation = 0
+    unk_tokens_test = 0
     stops_words = list(set(stopwords.words('english')))
     stops_words_list = []
 
-    unk_type_list = []
+    unk_type_list_validation = []
+    unk_type_list_test = []
 
     #SPLIT the corpus
     for w1 in training_set:
@@ -123,50 +126,66 @@ def statistics(training_set, validation_set, test_set):
             stops_words_list.append(voc)
 
     # UNKNOWN counting
-    aux_set = validation_split + test_split
-    for w in aux_set:
+    for w in validation_split:
         count += 1
-        if count % thresh == 0:
-            if w not in vocabulary:
-                unk_tokens += 1
-                if w not in unk_vocabulary_list:
-                    unk_vocabulary_list.append(w)
+        if w not in vocabulary:
+            unk_tokens_validation += 1
+            if w not in unk_vocabulary_list_validation:
+                unk_vocabulary_list_validation.append(w)
+    count = 0
+
+    for w in test_split:
+        count += 1
+        if w not in vocabulary:
+            unk_tokens_test += 1
+            if w not in unk_vocabulary_list_test:
+                unk_vocabulary_list_test.append(w)
 
     # i) number of tokens in each split (with threshold 3)
     num_tokens_training = len(training_split)
     num_tokens_validation = len(validation_split)
     num_tokens_test = len(test_split)
-    print(f"Number of tokens of training set with threshold 3: {num_tokens_training}")
-    print(f"Number of tokens of validation set with threshold 3: {num_tokens_validation}")
-    print(f"Number of tokens of test set with threshold 3: {num_tokens_test}")
+    print(f"i) Number of tokens of training set with threshold 3: {num_tokens_training}")
+    print(f"   Number of tokens of validation set with threshold 3: {num_tokens_validation}")
+    print(f"   Number of tokens of test set with threshold 3: {num_tokens_test}")
 
     # ii) the vocabulary size
     vocabulary_size = len(vocabulary)
-    print(f"The vocabulary size is: {vocabulary_size}")
+    print(f"ii) The vocabulary size is: {vocabulary_size}")
 
     # iii) the number of <unk> tokens
-    print(f"The number of <unk> tokens is: {unk_tokens}")
+    print(f"iii) The number of <unk> tokens in validation is: {unk_tokens_validation}")
+    print(f"     The number of <unk> tokens in test is: {unk_tokens_test}")
 
     # iv) number of out of vocabulary words
-    num_out_vocabulary = len(unk_vocabulary_list)
-    print(f"The number of out of vocabulary words: {num_out_vocabulary}")
+    num_out_vocabulary_validation = len(unk_vocabulary_list_validation)
+    num_out_vocabulary_test = len(unk_vocabulary_list_test)
+    print(f"iv) The number of out of vocabulary words in validation is: {num_out_vocabulary_validation}")
+    print(f"    The number of out of vocabulary words in test is: {num_out_vocabulary_test}")
 
     # v) the number of types mapped to <unk>
-    for unk in unk_vocabulary_list:
+    for unk in unk_vocabulary_list_validation:
         type_unk = type(unk)
-        #print(type_unk)
-        if type_unk not in unk_type_list:
-            unk_type_list.append(type_unk)
-    print(f"The number of types mapped to <unk>: {len(unk_type_list)}")
+        if type_unk not in unk_type_list_validation:
+            unk_type_list_validation.append(type_unk)
+
+    for unk in unk_vocabulary_list_validation:
+        type_unk = type(unk)
+        if type_unk not in unk_type_list_test:
+            unk_type_list_test.append(type_unk)
+    print(f"v) The number of types mapped to <unk> in validation is : {len(unk_type_list_validation)}")
+    print(f"   The number of types mapped to <unk> in test is : {len(unk_type_list_test)}")
 
     # vi) the number of stop words in the vocabulary
     num_stop_words = len(stops_words_list)
-    print(f"The number of stop words in the vocabulary: {num_stop_words}")
+    print(f"vi) The number of stop words in the vocabulary: {num_stop_words}")
 
     # vii) two custom metrics of your choice
 
-    ratio_unk_voc = num_out_vocabulary/vocabulary_size
-    print(f"The ratio between the <unk> and vocabulary size is: {ratio_unk_voc}")
+    ratio_unk_voc_validation = num_out_vocabulary_validation/vocabulary_size
+    ratio_unk_voc_test = num_out_vocabulary_test / vocabulary_size
+    print(f"vii) The ratio between the <unk> and vocabulary size for validation is: {ratio_unk_voc_validation}")
+    print(f"     The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
 
 
 def main():
