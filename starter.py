@@ -80,19 +80,40 @@ def statistics(training_set, validation_set, test_set):
 
     thresh = 3
     count = 0
+    training_split = []
+    validation_split = []
+    test_split = []
     vocabulary = []
     unk_vocabulary_list = []
     unk_tokens = 0
     stops_words = list(set(stopwords.words('english')))
     stops_words_list = []
-    aux_set = validation_set + test_set
+
     unk_type_list = []
+
+    #SPLIT the corpus
+    for w1 in training_set:
+        count += 1
+        if count % thresh == 0:
+            training_split.append(w1)
+    count = 0
+
+    for w2 in validation_set:
+        count += 1
+        if count % thresh == 0:
+            validation_split.append(w2)
+    count = 0
+
+    for w3 in test_set:
+        count += 1
+        if count % thresh == 0:
+            test_split.append(w3)
+    count = 0
 
     # VOCABULARY creating from training
     string_check = re.compile('[@_!#$%^&*()<>?/\|}{~:-]')
-    for word in training_set:
+    for word in training_split:
         count += 1
-        #if count % thresh == 0:
         if word not in vocabulary and (string_check.search(word) == None):
             vocabulary.append(word)
     count = 0
@@ -102,6 +123,7 @@ def statistics(training_set, validation_set, test_set):
             stops_words_list.append(voc)
 
     # UNKNOWN counting
+    aux_set = validation_split + test_split
     for w in aux_set:
         count += 1
         if count % thresh == 0:
@@ -111,9 +133,9 @@ def statistics(training_set, validation_set, test_set):
                     unk_vocabulary_list.append(w)
 
     # i) number of tokens in each split (with threshold 3)
-    num_tokens_training = round(len(training_set) / 3)
-    num_tokens_validation = round(len(validation_set) / 3)
-    num_tokens_test = round(len(test_set) / 3)
+    num_tokens_training = len(training_split)
+    num_tokens_validation = len(validation_split)
+    num_tokens_test = len(test_split)
     print(f"Number of tokens of training set with threshold 3: {num_tokens_training}")
     print(f"Number of tokens of validation set with threshold 3: {num_tokens_validation}")
     print(f"Number of tokens of test set with threshold 3: {num_tokens_test}")
@@ -142,10 +164,8 @@ def statistics(training_set, validation_set, test_set):
     print(f"The number of stop words in the vocabulary: {num_stop_words}")
 
     # vii) two custom metrics of your choice
-    # TOTAL NUMBER OF TOKENS OF THE CORPUS
-    corpus_tokens = len(training_set) + len(validation_set) + len(test_set)
+
     ratio_unk_voc = num_out_vocabulary/vocabulary_size
-    print(f"The total number of tokens of the corpus is: {corpus_tokens}")
     print(f"The ratio between the <unk> and vocabulary size is: {ratio_unk_voc}")
 
 
