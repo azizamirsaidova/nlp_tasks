@@ -10,11 +10,15 @@ class my_corpus():
         
         self.params = params
         print('setting parameters')
-    
+
+
+
     def encode_as_ints(self, sequence):
-        
-        int_represent = []
-        
+
+        dict_int1 = dict_int
+        tokens_seq = tokenize(sequence)
+        int_represent = [dict_int1[y] for y in tokens_seq]
+
         print('encode this sequence: %s' % sequence)
         print('as a list of integers.')
         
@@ -22,8 +26,8 @@ class my_corpus():
     
     def encode_as_text(self,int_represent):
 
-        text = ''
-        
+        text = [dict_char[y] for y in int_represent]
+       
         print('encode this list', int_represent)
         print('as a text sequence.')
         
@@ -188,11 +192,15 @@ def statistics(training_set, validation_set, test_set):
     print(f"     The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
 
 
+
+
+
 def main():
 
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
+    
     #print(tokens)
 
     #SPLIT datasets
@@ -204,7 +212,9 @@ def main():
     # STATISTICS
     statistics(training_set, validation_set, test_set)
 
-
+    global dict_int, dict_char
+    dict_int = dict([(y, x + 1) for x, y in enumerate(sorted(set(tokens)))])
+    dict_char = dict([((x+1),y) for x,y in enumerate(sorted(set(tokens)))])
 
     corpus = my_corpus(None)
     
