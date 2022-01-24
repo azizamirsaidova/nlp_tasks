@@ -249,6 +249,29 @@ def statistics(training_set, validation_set, test_set):
     print(f"        The number of punctuation on the test set is: {count_3}")
 
 
+def word_piece_tokenizer_func():
+    # Initialize
+    word_piece_tokenizer = BertWordPieceTokenizer(
+        clean_text=True,
+        handle_chinese_chars=False,
+        strip_accents=False,
+        lowercase=True
+    )
+
+    # and train
+    word_piece_tokenizer.train(files='/content/source_text.txt',
+                               vocab_size=5000, min_frequency=2,
+                               limit_alphabet=1000, wordpieces_prefix='##',
+                               special_tokens=['[PAD', '[UNK]', '[CLS]', '[SEP]', '[MASK]'])
+
+    print(" ")
+    print("Trained vocab size: {}".format(word_piece_tokenizer.get_vocab_size()))
+    print(" ")
+    output = word_piece_tokenizer.encode("Upon returning to Thailand, his first job was in the field of banking;")
+    print("Encoded string: ", output.tokens)
+    print(" ")
+    print("Decoded values: ", output.ids)
+
 def main():
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
@@ -286,23 +309,7 @@ def main():
     print(' ')
 
     # Word-piece tokenizer
-    # Initialize
-    word_piece_tokenizer = BertWordPieceTokenizer(
-        clean_text=True,
-        handle_chinese_chars=False,
-        strip_accents=False,
-        lowercase=False
-    )
-
-    # and train
-    word_piece_tokenizer.train(files='/content/source_text.txt', vocab_size=16139, min_frequency=2,
-                               limit_alphabet=1000, wordpieces_prefix='##',
-                               special_tokens=['[PAD', '[UNK]', '[CLS]', '[SEP]', '[MASK]'])
-
-    output = word_piece_tokenizer.encode("Upon returning to Thailand, his first job was in the field of banking;")
-    print(output.tokens)
-    print(" ")
-    print(output.ids)
+    word_piece_tokenizer_func()
 
 
 if __name__ == "__main__":
