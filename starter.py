@@ -1,5 +1,6 @@
 import nltk
 import re
+from sklearn.model_selection import train_test_split
 nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -21,8 +22,9 @@ class my_corpus():
 
         print('encode this sequence: %s' % sequence)
         print('as a list of integers.')
-        
-        return(int_represent)
+        return (int_represent)
+
+
     
     def encode_as_text(self,int_represent):
 
@@ -77,6 +79,31 @@ def split_data(tokens):
     # print(len(training_set))
     # print(len(validation_set))
     # print(len(test_set))
+
+    return (training_set, validation_set, test_set)
+
+#q3-train,test and valid split
+def text_split(corpus):
+    split_corpus =(corpus.split("<end_of_passage>\n\n<start_of_passage>"))
+    # Defines ratios, w.r.t. whole dataset.
+    train_ratio = 0.8
+    val_ratio = 0.1
+    test_ratio = 0.1
+
+    # Produces test split.
+    train_rem, test_set = train_test_split(split_corpus, test_size=test_ratio)
+
+    # Adjusts val ratio, w.r.t. remaining dataset.
+    ratio_remaining = 1 - test_ratio
+    ratio_val_adjusted = val_ratio / ratio_remaining
+
+    # Produces train and val splits.
+    training_set, validation_set = train_test_split(train_rem, test_size=ratio_val_adjusted)
+
+
+    # print("train",training_set)
+    # print("test",len(validation_set))
+    # print("valid",len(test_set))
 
     return (training_set, validation_set, test_set)
 
@@ -200,7 +227,8 @@ def main():
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
-    
+    #split dataset sklearn
+    text_split(text_file)
     #print(tokens)
 
     #SPLIT datasets
