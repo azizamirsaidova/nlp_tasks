@@ -1,21 +1,23 @@
 import nltk
 import re
 from sklearn.model_selection import train_test_split
+
 nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
+# !pip install tokenizers
+from tokenizers import BertWordPieceTokenizer
+from tokenizers import decoders
+
 
 class my_corpus():
     def __init__(self, params):
-        super().__init__() 
-        
+        super().__init__()
+
         self.params = params
         print('setting parameters')
 
-
-
     def encode_as_ints(self, sequence):
-
         dict_int1 = dict_int
         tokens_seq = tokenize(sequence)
         int_represent = [dict_int1[y] for y in tokens_seq]
@@ -24,38 +26,37 @@ class my_corpus():
         print('as a list of integers.')
         return (int_represent)
 
-
-    
-    def encode_as_text(self,int_represent):
-
+    def encode_as_text(self, int_represent):
         text = [dict_char[y] for y in int_represent]
-       
+
         print('encode this list', int_represent)
         print('as a text sequence.')
-        
-        return(text)
+
+        return (text)
+
 
 def tokenize(text_file):
-    #TOKENIZE
+    # TOKENIZE
     tokens = nltk.word_tokenize(text_file)
-    months_list = ['january','february','march','april','may','june','july','august','september','october','november','december']
-    #print(tokens)
+    months_list = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october',
+                   'november', 'december']
+    # print(tokens)
 
-    #LOWERCASE
+    # LOWERCASE
     for i in range(len(tokens)):
         tokens[i] = tokens[i].lower()
-    #print(tokens[0:10])
+    # print(tokens[0:10])
 
     for i in range(len(tokens)):
-        if tokens[i].isnumeric() and len(tokens[i])==4:
+        if tokens[i].isnumeric() and len(tokens[i]) == 4:
             tokens[i] = '<year>'
         elif isinstance(tokens[i], float):
             tokens[i] = '<decimal>'
 
-        elif (tokens[i] in months_list) and re.match(r'\d*',tokens[i+1]) and len(tokens[i+1])<3:
-            tokens[i+1] = '<days>'
+        elif (tokens[i] in months_list) and re.match(r'\d*', tokens[i + 1]) and len(tokens[i + 1]) < 3:
+            tokens[i + 1] = '<days>'
 
-        elif i > 1 and (tokens[i] in months_list) and re.match(r'\d*',tokens[i-1]) and len(tokens[i - 1]) < 3:
+        elif i > 1 and (tokens[i] in months_list) and re.match(r'\d*', tokens[i - 1]) and len(tokens[i - 1]) < 3:
             tokens[i - 1] = '<days>'
 
         elif tokens[i].isdigit():
@@ -64,13 +65,12 @@ def tokenize(text_file):
         elif re.search('[\d*]', tokens[i]) and re.search('[@_!#$%^&*()<>?/\|}{~:-]', tokens[i]):
             tokens[i] = '<other>'
 
-
     return tokens
 
-def split_data(tokens):
 
-    split1 = round(len(tokens)*0.8)
-    split2 = round(split1 + len(tokens)*0.1)
+def split_data(tokens):
+    split1 = round(len(tokens) * 0.8)
+    split2 = round(split1 + len(tokens) * 0.1)
 
     training_set = tokens[:split1]
     validation_set = tokens[split1:split2]
@@ -82,9 +82,10 @@ def split_data(tokens):
 
     return (training_set, validation_set, test_set)
 
-#q3-train,test and valid split
+
+# q3-train,test and valid split
 def text_split(corpus):
-    split_corpus =(corpus.split("<end_of_passage>\n\n<start_of_passage>"))
+    split_corpus = (corpus.split("<end_of_passage>\n\n<start_of_passage>"))
     # Defines ratios, w.r.t. whole dataset.
     train_ratio = 0.8
     val_ratio = 0.1
@@ -100,15 +101,14 @@ def text_split(corpus):
     # Produces train and val splits.
     training_set, validation_set = train_test_split(train_rem, test_size=ratio_val_adjusted)
 
-
     # print("train",training_set)
     # print("test",len(validation_set))
     # print("valid",len(test_set))
 
     return (training_set, validation_set, test_set)
 
-def statistics(training_set, validation_set, test_set):
 
+def statistics(training_set, validation_set, test_set):
     thresh = 3
     count = 0
     training_split = []
@@ -125,7 +125,7 @@ def statistics(training_set, validation_set, test_set):
     unk_type_list_validation = []
     unk_type_list_test = []
 
-    #SPLIT the corpus
+    # SPLIT the corpus
     for w1 in training_set:
         count += 1
         if count % thresh == 0:
@@ -213,25 +213,21 @@ def statistics(training_set, validation_set, test_set):
 
     # vii) two custom metrics of your choice
 
-    ratio_unk_voc_validation = num_out_vocabulary_validation/vocabulary_size
+    ratio_unk_voc_validation = num_out_vocabulary_validation / vocabulary_size
     ratio_unk_voc_test = num_out_vocabulary_test / vocabulary_size
     print(f"vii) The ratio between the <unk> and vocabulary size for validation is: {ratio_unk_voc_validation}")
     print(f"     The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
 
 
-
-
-
 def main():
-
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
-    #split dataset sklearn
+    # split dataset sklearn
     text_split(text_file)
-    #print(tokens)
+    # print(tokens)
 
-    #SPLIT datasets
+    # SPLIT datasets
     splited_data = split_data(tokens)
     training_set = splited_data[0]
     validation_set = splited_data[1]
@@ -242,25 +238,42 @@ def main():
 
     global dict_int, dict_char
     dict_int = dict([(y, x + 1) for x, y in enumerate(sorted(set(tokens)))])
-    dict_char = dict([((x+1),y) for x,y in enumerate(sorted(set(tokens)))])
+    dict_char = dict([((x + 1), y) for x, y in enumerate(sorted(set(tokens)))])
 
     corpus = my_corpus(None)
-    
+
     text = input('Please enter a test sequence to encode and recover: ')
     print(' ')
     ints = corpus.encode_as_ints(text)
     print(' ')
-    print('integer encodeing: ',ints)
-    
+    print('integer encodeing: ', ints)
+
     print(' ')
     text = corpus.encode_as_text(ints)
     print(' ')
     print('this is the encoded text: %s' % text)
+    print(' ')
+
+    # Word-piece tokenizer
+    # Initialize
+    word_piece_tokenizer = BertWordPieceTokenizer(
+        clean_text=True,
+        handle_chinese_chars=False,
+        strip_accents=False,
+        lowercase=False
+    )
+
+    # and train
+    word_piece_tokenizer.train(files='/content/source_text.txt', vocab_size=16139, min_frequency=2,
+                               limit_alphabet=1000, wordpieces_prefix='##',
+                               special_tokens=['[PAD', '[UNK]', '[CLS]', '[SEP]', '[MASK]'])
+
+    output = word_piece_tokenizer.encode("Upon returning to Thailand, his first job was in the field of banking;")
+    print(output.tokens)
+    print(" ")
+    print(output.ids)
 
 
 if __name__ == "__main__":
     main()
-        
-    
-    
-              
+
