@@ -8,6 +8,8 @@ from nltk.corpus import stopwords
 # !pip install tokenizers
 from tokenizers import BertWordPieceTokenizer
 from tokenizers import decoders
+from transformers import BertTokenizer
+
 
 
 class my_corpus():
@@ -75,10 +77,6 @@ def split_data(tokens):
     training_set = tokens[:split1]
     validation_set = tokens[split1:split2]
     test_set = tokens[split2:]
-
-    # print(len(training_set))
-    # print(len(validation_set))
-    # print(len(test_set))
 
     return (training_set, validation_set, test_set)
 
@@ -264,9 +262,10 @@ def main():
     validation_set = data[1]
     test_set = data[2]
 
-    # STATISTICS
+    # Q4 STATISTICS
     statistics(training_set, validation_set, test_set)
 
+    # Q5 encoding
     global dict_int, dict_char
     dict_int = dict([(y, x + 1) for x, y in enumerate(sorted(set(tokens)))])
     dict_char = dict([((x + 1), y) for x, y in enumerate(sorted(set(tokens)))])
@@ -285,7 +284,7 @@ def main():
     print('this is the encoded text: %s' % text)
     print(' ')
 
-    # Word-piece tokenizer
+    # Q6 Word-piece tokenizer
     # Initialize
     word_piece_tokenizer = BertWordPieceTokenizer(
         clean_text=True,
@@ -295,7 +294,7 @@ def main():
     )
 
     # and train
-    word_piece_tokenizer.train(files='/content/source_text.txt', vocab_size=16139, min_frequency=2,
+    word_piece_tokenizer.train(files='source_text.txt', vocab_size=16139, min_frequency=2,
                                limit_alphabet=1000, wordpieces_prefix='##',
                                special_tokens=['[PAD', '[UNK]', '[CLS]', '[SEP]', '[MASK]'])
 
@@ -303,6 +302,17 @@ def main():
     print(output.tokens)
     print(" ")
     print(output.ids)
+
+    # Ana's code for Q6
+    tokenizer_q6 = BertTokenizer.from_pretrained("bert-base-uncased")
+    tokenized_q6 = tokenizer_q6.tokenize(text_file)
+
+    data_q6 = split_data(tokenized_q6)
+    training_set_q6 = data_q6[0]
+    validation_set_q6 = data_q6[1]
+    test_set_q6 = data_q6[2]
+
+    statistics(training_set_q6, validation_set_q6, test_set_q6)
 
 
 if __name__ == "__main__":
