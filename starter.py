@@ -101,10 +101,6 @@ def text_split(corpus):
     # Produces train and val splits.
     training_set, validation_set = train_test_split(train_rem, test_size=ratio_val_adjusted)
 
-    # print("train",training_set)
-    # print("test",len(validation_set))
-    # print("valid",len(test_set))
-
     return (training_set, validation_set, test_set)
 
 
@@ -195,28 +191,62 @@ def statistics(training_set, validation_set, test_set):
     print(f"    The number of out of vocabulary words in test is: {num_out_vocabulary_test}")
 
     # v) the number of types mapped to <unk>
+    # Validation
     for unk in unk_vocabulary_list_validation:
-        type_unk = type(unk)
+        type_unk = ""
+        if unk.isdigit():
+            type_unk = 'integer'
+        elif isinstance(unk, float):
+            type_unk = 'float'
+        elif unk.isalnum():
+            type_unk = 'string'
         if type_unk not in unk_type_list_validation:
             unk_type_list_validation.append(type_unk)
-
-    for unk in unk_vocabulary_list_validation:
-        type_unk = type(unk)
+    # Test
+    for unk in unk_vocabulary_list_test:
+        type_unk = ""
+        if unk.isdigit():
+            type_unk = 'integer'
+        elif isinstance(unk, float):
+            type_unk = 'float'
+        elif unk.isalnum():
+            type_unk = 'string'
         if type_unk not in unk_type_list_test:
             unk_type_list_test.append(type_unk)
-    print(f"v) The number of types mapped to <unk> in validation is : {len(unk_type_list_validation)}")
-    print(f"   The number of types mapped to <unk> in test is : {len(unk_type_list_test)}")
+
+    print(f"v) The number of types mapped to <unk> in validation is : {len(unk_type_list_validation)-1}")
+    print(f"   The number of types mapped to <unk> in test is : {len(unk_type_list_test)-1}")
 
     # vi) the number of stop words in the vocabulary
     num_stop_words = len(stops_words_list)
     print(f"vi) The number of stop words in the vocabulary: {num_stop_words}")
 
     # vii) two custom metrics of your choice
-
+    # Ratio of unknown
     ratio_unk_voc_validation = num_out_vocabulary_validation / vocabulary_size
     ratio_unk_voc_test = num_out_vocabulary_test / vocabulary_size
-    print(f"vii) The ratio between the <unk> and vocabulary size for validation is: {ratio_unk_voc_validation}")
-    print(f"     The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
+    print(f"vii) a) The ratio between the <unk> and vocabulary size for validation is: {ratio_unk_voc_validation}")
+    print(f"        The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
+
+    # Count of punctuation
+    #punctuation = ['[@_!#$%^&*()<>?/\|}{~:-]]'
+    punctuation = ['.',",",'(',')','?','!',']','[']
+    count_1 = 0
+    for t in training_split:
+        if t in punctuation:
+            count_1 += 1
+    count_2 = 0
+    for t in validation_split:
+        if t in punctuation:
+            count_2 += 1
+    count_3 = 0
+    for t in test_split:
+        if t in punctuation:
+            count_3 += 1
+
+    print(f"vii) b) The number of punctuation on the training set is: {count_1}")
+    print(f"        The number of punctuation on the validation set is: {count_2}")
+    print(f"        The number of punctuation on the test set is: {count_3}")
 
 
 def main():
@@ -224,14 +254,15 @@ def main():
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
     # split dataset sklearn
-    text_split(text_file)
+    splited_data = text_split(text_file)
+
     # print(tokens)
 
     # SPLIT datasets
-    splited_data = split_data(tokens)
-    training_set = splited_data[0]
-    validation_set = splited_data[1]
-    test_set = splited_data[2]
+    data = split_data(tokens)
+    training_set = data[0]
+    validation_set = data[1]
+    test_set = data[2]
 
     # STATISTICS
     statistics(training_set, validation_set, test_set)
@@ -276,4 +307,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+        
+    
+    
+              
