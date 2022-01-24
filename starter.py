@@ -15,25 +15,42 @@ class my_corpus():
 
 
     def encode_as_ints(self, sequence):
-
+        # if key in mydict.keys():
         dict_int1 = dict_int
         tokens_seq = tokenize(sequence)
-        int_represent = [dict_int1[y] for y in tokens_seq]
+        int_rep=[]
+        for i in tokens_seq:
 
-        print('encode this sequence: %s' % sequence)
-        print('as a list of integers.')
-        return (int_represent)
+            if i in dict_int1.keys():
+                int_represent = dict_int1[i]
+                int_rep.append(int_represent)
+                print('encode this sequence: %s' % sequence)
+                print('as a list of integers.')
+            elif i not in dict_int1.keys():
+
+                dict_int1[i] = "unk"
+                int_represent = dict_int1[i]
+                dict_char[int_represent] =i
+                int_rep.append("unk")
+                print("done int")
+
+        return (int_rep)
 
 
-    
-    def encode_as_text(self,int_represent):
+    def encode_as_text(self, int_represent):
+        if type(int_represent)!= str:
 
-        text = [dict_char[y] for y in int_represent]
-       
-        print('encode this list', int_represent)
-        print('as a text sequence.')
+            text = [dict_char[y] for y in int_represent]
+            print('encode this list', int_represent)
+            print('as a text sequence.')
+        else:
+            text = dict_char[int_represent]
+
+
+        return (text)
+
         
-        return(text)
+
 
 def tokenize(text_file):
     #TOKENIZE
@@ -100,7 +117,18 @@ def text_split(corpus):
     # Produces train and val splits.
     training_set, validation_set = train_test_split(train_rem, test_size=ratio_val_adjusted)
 
+    #saving the text files 
+    file1 = open("training.txt","w")
+    file2= open( "validation.txt","w")
+    file3 = open("test.txt","w")
+    # Reading from file
+    file1.write(''.join(training_set))
+    file2.write(''.join(validation_set))
+    file3.write(''.join(test_set))
 
+    file1.close()
+    file2.close()
+    file3.close()
     # print("train",training_set)
     # print("test",len(validation_set))
     # print("valid",len(test_set))
