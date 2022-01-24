@@ -119,7 +119,7 @@ def statistics(training_set, validation_set, test_set):
     unk_type_list_validation = []
     unk_type_list_test = []
 
-    # SPLIT the corpus
+    # SPLIT the corpus m
     for w1 in training_set:
         count += 1
         if count % thresh == 0:
