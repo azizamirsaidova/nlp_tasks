@@ -10,8 +10,6 @@ from tokenizers import BertWordPieceTokenizer
 from tokenizers import decoders
 from transformers import BertTokenizer
 
-
-
 class my_corpus():
     def __init__(self, params):
         super().__init__()
