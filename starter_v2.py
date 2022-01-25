@@ -298,13 +298,16 @@ def main():
 
     # Create and save in .txt files
     with open("training2.txt", "w") as output_training:
-        output_training.write(str(training_tokens))
+        joined = " ".join(str(x) for x in training_tokens)
+        output_training.write(str(joined))
 
     with open("validation2.txt", "w") as output_validation:
-        output_validation.write(str(validation_tokens))
+        joined = " ".join(str(x) for x in validation_tokens)
+        output_validation.write(str(joined))
 
     with open("test2.txt", "w") as output_test:
-        output_test.write(str(test_tokens))
+        joined = " ".join(str(x) for x in test_tokens)
+        output_test.write(str(joined))
 
     # Q4 STATISTICS
     statistics(training_tokens, validation_tokens, test_tokens)
