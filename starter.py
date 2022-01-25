@@ -35,7 +35,7 @@ class my_corpus():
 
                 dict_int1[i] = "unk"
                 int_represent = dict_int1[i]
-                dict_char[int_represent] =i
+                dict_char[int_represent] ="unk"
                 int_rep.append("unk")
                 print("done int")
 
@@ -49,7 +49,7 @@ class my_corpus():
             print('encode this list', int_represent)
             print('as a text sequence.')
         else:
-            text = dict_char[int_represent]
+            text = "unk"
 
 
         return (text)
