@@ -5,16 +5,14 @@ from sklearn.model_selection import train_test_split
 nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
-# !pip install tokenizers
-from tokenizers import BertWordPieceTokenizer
-from tokenizers import decoders
-from transformers import BertTokenizer
 
-from starter import tokenize
+
+
 
     
 
 class my_corpus():
+
     def __init__(self, params):
         super().__init__()
 
@@ -53,6 +51,38 @@ class my_corpus():
         else:
             text = "unk"
         return (text)
+
+def tokenize(text_file):
+    # TOKENIZE
+    tokens = nltk.word_tokenize(text_file)
+    months_list = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october',
+                   'november', 'december']
+    # print(tokens)
+
+    # LOWERCASE
+    for i in range(len(tokens)):
+        tokens[i] = tokens[i].lower()
+    # print(tokens[0:10])
+
+    for i in range(len(tokens)):
+        if tokens[i].isnumeric() and len(tokens[i]) == 4:
+            tokens[i] = '<year>'
+        elif isinstance(tokens[i], float):
+            tokens[i] = '<decimal>'
+
+        elif (tokens[i] in months_list) and re.match(r'\d*', tokens[i + 1]) and len(tokens[i + 1]) < 3:
+            tokens[i + 1] = '<days>'
+
+        elif i > 1 and (tokens[i] in months_list) and re.match(r'\d*', tokens[i - 1]) and len(tokens[i - 1]) < 3:
+            tokens[i - 1] = '<days>'
+
+        elif tokens[i].isdigit():
+            tokens[i] = '<integer>'
+
+        elif re.search('[\d*]', tokens[i]) and re.search('[@_!#$%^&*()<>?/\|}{~:-]', tokens[i]):
+            tokens[i] = '<other>'
+
+    return tokens
 
 def main():
     # TOKENIZE the corpus
