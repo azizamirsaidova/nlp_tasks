@@ -1,18 +1,23 @@
 import nltk
 import re
 from sklearn.model_selection import train_test_split
+
 nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
+# !pip install tokenizers
+from tokenizers import BertWordPieceTokenizer
+from tokenizers import decoders
+from transformers import BertTokenizer
+
+
 
 class my_corpus():
     def __init__(self, params):
-        super().__init__() 
-        
+        super().__init__()
+
         self.params = params
         print('setting parameters')
-
-
 
     def encode_as_ints(self, sequence):
         # if key in mydict.keys():
@@ -49,30 +54,29 @@ class my_corpus():
 
         return (text)
 
-        
-
 
 def tokenize(text_file):
-    #TOKENIZE
+    # TOKENIZE
     tokens = nltk.word_tokenize(text_file)
-    months_list = ['january','february','march','april','may','june','july','august','september','october','november','december']
-    #print(tokens)
+    months_list = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october',
+                   'november', 'december']
+    # print(tokens)
 
-    #LOWERCASE
+    # LOWERCASE
     for i in range(len(tokens)):
         tokens[i] = tokens[i].lower()
-    #print(tokens[0:10])
+    # print(tokens[0:10])
 
     for i in range(len(tokens)):
-        if tokens[i].isnumeric() and len(tokens[i])==4:
+        if tokens[i].isnumeric() and len(tokens[i]) == 4:
             tokens[i] = '<year>'
         elif isinstance(tokens[i], float):
             tokens[i] = '<decimal>'
 
-        elif (tokens[i] in months_list) and re.match(r'\d*',tokens[i+1]) and len(tokens[i+1])<3:
-            tokens[i+1] = '<days>'
+        elif (tokens[i] in months_list) and re.match(r'\d*', tokens[i + 1]) and len(tokens[i + 1]) < 3:
+            tokens[i + 1] = '<days>'
 
-        elif i > 1 and (tokens[i] in months_list) and re.match(r'\d*',tokens[i-1]) and len(tokens[i - 1]) < 3:
+        elif i > 1 and (tokens[i] in months_list) and re.match(r'\d*', tokens[i - 1]) and len(tokens[i - 1]) < 3:
             tokens[i - 1] = '<days>'
 
         elif tokens[i].isdigit():
@@ -81,27 +85,23 @@ def tokenize(text_file):
         elif re.search('[\d*]', tokens[i]) and re.search('[@_!#$%^&*()<>?/\|}{~:-]', tokens[i]):
             tokens[i] = '<other>'
 
-
     return tokens
 
-def split_data(tokens):
 
-    split1 = round(len(tokens)*0.8)
-    split2 = round(split1 + len(tokens)*0.1)
+def split_data(tokens):
+    split1 = round(len(tokens) * 0.8)
+    split2 = round(split1 + len(tokens) * 0.1)
 
     training_set = tokens[:split1]
     validation_set = tokens[split1:split2]
     test_set = tokens[split2:]
 
-    # print(len(training_set))
-    # print(len(validation_set))
-    # print(len(test_set))
-
     return (training_set, validation_set, test_set)
 
-#q3-train,test and valid split
+
+# q3-train,test and valid split
 def text_split(corpus):
-    split_corpus =(corpus.split("<end_of_passage>\n\n<start_of_passage>"))
+    split_corpus = (corpus.split("<end_of_passage>\n\n<start_of_passage>"))
     # Defines ratios, w.r.t. whole dataset.
     train_ratio = 0.8
     val_ratio = 0.1
@@ -117,7 +117,7 @@ def text_split(corpus):
     # Produces train and val splits.
     training_set, validation_set = train_test_split(train_rem, test_size=ratio_val_adjusted)
 
-    #saving the text files 
+    #saving the text files
     file1 = open("training.txt","w")
     file2= open( "validation.txt","w")
     file3 = open("test.txt","w")
@@ -134,6 +134,7 @@ def text_split(corpus):
     # print("valid",len(test_set))
 
     return (training_set, validation_set, test_set)
+
 
 def statistics(training_set, validation_set, test_set):
 
@@ -153,7 +154,7 @@ def statistics(training_set, validation_set, test_set):
     unk_type_list_validation = []
     unk_type_list_test = []
 
-    #SPLIT the corpus
+    # SPLIT the corpus m
     for w1 in training_set:
         count += 1
         if count % thresh == 0:
@@ -223,67 +224,135 @@ def statistics(training_set, validation_set, test_set):
     print(f"    The number of out of vocabulary words in test is: {num_out_vocabulary_test}")
 
     # v) the number of types mapped to <unk>
+    # Validation
     for unk in unk_vocabulary_list_validation:
-        type_unk = type(unk)
+        if unk.isdigit() or unk == '<integer>':
+            type_unk = 'integer'
+        elif isinstance(unk, float) or unk == '<decimal>':
+            type_unk = 'float'
+        elif unk == '<days>' or unk == '<year>':
+            type_unk = 'date'
+        else:
+            type_unk = 'string'
         if type_unk not in unk_type_list_validation:
             unk_type_list_validation.append(type_unk)
 
-    for unk in unk_vocabulary_list_validation:
-        type_unk = type(unk)
-        if type_unk not in unk_type_list_test:
-            unk_type_list_test.append(type_unk)
+    # Test
+    for unk2 in unk_vocabulary_list_test:
+        if unk2.isdigit() or unk2 == '<integer>':
+            type_unk2 = 'integer'
+        elif isinstance(unk2, float) or unk2 == '<decimal>':
+            type_unk2 = 'float'
+        elif unk2 == '<days>' or unk2 == '<year>':
+            type_unk2 = 'date'
+        else:
+            type_unk2 = 'string'
+        if type_unk2 not in unk_type_list_test:
+            unk_type_list_test.append(type_unk2)
+
     print(f"v) The number of types mapped to <unk> in validation is : {len(unk_type_list_validation)}")
+    print(unk_type_list_validation)
     print(f"   The number of types mapped to <unk> in test is : {len(unk_type_list_test)}")
+    print(unk_type_list_test)
 
     # vi) the number of stop words in the vocabulary
     num_stop_words = len(stops_words_list)
     print(f"vi) The number of stop words in the vocabulary: {num_stop_words}")
 
     # vii) two custom metrics of your choice
-
-    ratio_unk_voc_validation = num_out_vocabulary_validation/vocabulary_size
+    # Ratio of unknown
+    ratio_unk_voc_validation = num_out_vocabulary_validation / vocabulary_size
     ratio_unk_voc_test = num_out_vocabulary_test / vocabulary_size
-    print(f"vii) The ratio between the <unk> and vocabulary size for validation is: {ratio_unk_voc_validation}")
-    print(f"     The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
+    print(f"vii) a) The ratio between the <unk> and vocabulary size for validation is: {ratio_unk_voc_validation}")
+    print(f"        The ratio between the <unk> and vocabulary size for test is: {ratio_unk_voc_test}")
 
+    # Count of punctuation
+    #punctuation = ['[@_!#$%^&*()<>?/\|}{~:-]]'
+    punctuation = ['.',",",'(',')','?','!',']','[']
+    count_1 = 0
+    for t in training_split:
+        if t in punctuation:
+            count_1 += 1
+    count_2 = 0
+    for t in validation_split:
+        if t in punctuation:
+            count_2 += 1
+    count_3 = 0
+    for t in test_split:
+        if t in punctuation:
+            count_3 += 1
 
-
+    print(f"vii) b) The number of punctuation on the training set is: {count_1}")
+    print(f"        The number of punctuation on the validation set is: {count_2}")
+    print(f"        The number of punctuation on the test set is: {count_3}")
 
 
 def main():
-
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
     tokens = tokenize(text_file)
-    #split dataset sklearn
-    text_split(text_file)
-    #print(tokens)
+    # split dataset sklearn
+    splited_data = text_split(text_file)
 
-    #SPLIT datasets
-    splited_data = split_data(tokens)
-    training_set = splited_data[0]
-    validation_set = splited_data[1]
-    test_set = splited_data[2]
+    # print(tokens)
 
-    # STATISTICS
+    # SPLIT datasets
+    data = split_data(tokens)
+    training_set = data[0]
+    validation_set = data[1]
+    test_set = data[2]
+
+    # Q4 STATISTICS
     statistics(training_set, validation_set, test_set)
 
+    # Q5 encoding
     global dict_int, dict_char
     dict_int = dict([(y, x + 1) for x, y in enumerate(sorted(set(tokens)))])
-    dict_char = dict([((x+1),y) for x,y in enumerate(sorted(set(tokens)))])
+    dict_char = dict([((x + 1), y) for x, y in enumerate(sorted(set(tokens)))])
 
     corpus = my_corpus(None)
-    
+
     text = input('Please enter a test sequence to encode and recover: ')
     print(' ')
     ints = corpus.encode_as_ints(text)
     print(' ')
-    print('integer encodeing: ',ints)
-    
+    print('integer encodeing: ', ints)
+
     print(' ')
     text = corpus.encode_as_text(ints)
     print(' ')
     print('this is the encoded text: %s' % text)
+    print(' ')
+
+    # Q6 Word-piece tokenizer
+    # Initialize
+    word_piece_tokenizer = BertWordPieceTokenizer(
+        clean_text=True,
+        handle_chinese_chars=False,
+        strip_accents=False,
+        lowercase=False
+    )
+
+    # and train
+    word_piece_tokenizer.train(files='source_text.txt', vocab_size=16139, min_frequency=2,
+                               limit_alphabet=1000, wordpieces_prefix='##',
+                               special_tokens=['[PAD', '[UNK]', '[CLS]', '[SEP]', '[MASK]'])
+
+    output = word_piece_tokenizer.encode("Upon returning to Thailand, his first job was in the field of banking;")
+    print(output.tokens)
+    print(" ")
+    print(output.ids)
+
+    # Ana's code for Q6
+    tokenizer_q6 = BertTokenizer.from_pretrained("bert-base-uncased")
+    tokenized_q6 = tokenizer_q6.tokenize(text_file)
+
+    data_q6 = split_data(tokenized_q6)
+    training_set_q6 = data_q6[0]
+    validation_set_q6 = data_q6[1]
+    test_set_q6 = data_q6[2]
+
+    statistics(training_set_q6, validation_set_q6, test_set_q6)
 
 
 if __name__ == "__main__":
