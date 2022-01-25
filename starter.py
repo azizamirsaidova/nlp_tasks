@@ -349,7 +349,7 @@ def main():
     print(" ")
     print(output.ids)
 
-    # Ana's code for Q6
+    # Get statistics for q6
     tokenizer_q6 = BertTokenizer.from_pretrained("bert-base-uncased")
     tokenized_q6 = tokenizer_q6.tokenize(text_file)
 
@@ -358,6 +358,7 @@ def main():
     validation_set_q6 = data_q6[1]
     test_set_q6 = data_q6[2]
 
+    print("Statistics for Word-piece tokenizer")
     statistics(training_set_q6, validation_set_q6, test_set_q6)
 
 
