@@ -53,9 +53,9 @@ class my_corpus():
         return (text)
 
 
-def tokenize(text_file):
+def tags(tokens):
     # TOKENIZE
-    tokens = nltk.word_tokenize(text_file)
+    #tokens = nltk.word_tokenize(text_file)
 
     months_list = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october',
                    'november', 'december']
@@ -102,9 +102,8 @@ def split_data(tokens):
 def tokenizer_aux(text_list):
     tokenized_text = []
     for item in text_list:
-        tokens = tokenize(item)
+        tokens = nltk.word_tokenize(item)
         tokenized_text.extend(tokens)
-
     return tokenized_text
 
 # q3-train,test and valid split
@@ -125,18 +124,7 @@ def text_split(corpus):
     # Produces train and val splits.
     training_set, validation_set = train_test_split(train_rem, test_size=ratio_val_adjusted)
 
-    #saving the text files
-    file1 = open("training.txt","w")
-    file2= open( "validation.txt","w")
-    file3 = open("test.txt","w")
-    # Reading from file
-    file1.write(''.join(training_set))
-    file2.write(''.join(validation_set))
-    file3.write(''.join(test_set))
 
-    file1.close()
-    file2.close()
-    file3.close()
     # print("train",training_set)
     # print("test",len(validation_set))
     # print("valid",len(test_set))
@@ -296,39 +284,30 @@ def statistics(training_set, validation_set, test_set):
 def main():
     # TOKENIZE the corpus
     text_file = open("source_text.txt").read()
-    tokens = tokenize(text_file)
-    # split dataset sklearn
+
+    # Split dataset
     splited_data = text_split(text_file)
+    training_set = splited_data[0]
+    validation_set = splited_data[1]
+    test_set = splited_data[2]
 
-    # print(tokens)
+    # Tokenize each dataset
+    training_tokens = tags(tokenizer_aux(training_set))
+    validation_tokens = tags(tokenizer_aux(validation_set))
+    test_tokens = tags(tokenizer_aux(test_set))
 
-    # SPLIT datasets
-    data = split_data(tokens)
-    training_set = data[0]
-    validation_set = data[1]
-    test_set = data[2]
+    # Create and save in .txt files
+    with open("training2.txt", "w") as output_training:
+        output_training.write(str(training_tokens))
+
+    with open("validation2.txt", "w") as output_validation:
+        output_validation.write(str(validation_tokens))
+
+    with open("test2.txt", "w") as output_test:
+        output_test.write(str(test_tokens))
 
     # Q4 STATISTICS
-    statistics(training_set, validation_set, test_set)
-
-    # Q5 encoding
-    global dict_int, dict_char
-    dict_int = dict([(y, x + 1) for x, y in enumerate(sorted(set(tokens)))])
-    dict_char = dict([((x + 1), y) for x, y in enumerate(sorted(set(tokens)))])
-
-    corpus = my_corpus(None)
-
-    text = input('Please enter a test sequence to encode and recover: ')
-    print(' ')
-    ints = corpus.encode_as_ints(text)
-    print(' ')
-    print('integer encodeing: ', ints)
-
-    print(' ')
-    text = corpus.encode_as_text(ints)
-    print(' ')
-    print('this is the encoded text: %s' % text)
-    print(' ')
+    statistics(training_tokens, validation_tokens, test_tokens)
 
     # Q6 Word-piece tokenizer
     # Initialize
